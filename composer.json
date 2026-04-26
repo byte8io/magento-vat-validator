@@ -29,5 +29,6 @@
         "psr-4": {
             "Byte8\\VatValidator\\": ""
         }
-    }
+    },
+    "version": "0.1.0"
 }
