@@ -2,17 +2,18 @@
 
 Docusaurus 3 site for [`byte8/module-vat-validator`](../README.md).
 
-Hosted at **https://byte8.github.io/module-vat-validator/**.
+Hosted at **https://magento-vat-validator.byte8.dev**.
 
 ## Local development
 
 ```bash
-cd packages/modules/module-vat-validator/docs
+cd docs
+nvm use            # picks up .nvmrc → Node 20
 pnpm install
 pnpm start
 ```
 
-Opens at `http://localhost:3000/module-vat-validator/`.
+Opens at `http://localhost:3000/`.
 
 ## Production build
 
@@ -25,21 +26,24 @@ Output lands in `build/`.
 
 ## Deploying
 
-Two options:
+Automated. Every push to `main` that touches `docs/**` triggers
+`.github/workflows/deploy-docs.yml`, which builds the site and
+publishes it to GitHub Pages.
 
-### Option 1 — Move docs/ to its own repo
+You can also kick a deploy manually from the **Actions** tab on
+GitHub → "Deploy Docs" → "Run workflow".
 
-Recommended once the docs site has its own URL and release cadence.
-Copy `deploy-docs.yml.example` to `.github/workflows/deploy-docs.yml`
-in the new repo, then enable Pages in repo settings (Source: "GitHub
-Actions").
+### One-time GitHub setup
 
-### Option 2 — Deploy from the monorepo
+1. Go to **Settings → Pages** on the
+   [byte8io/magento-vat-validator](https://github.com/byte8io/magento-vat-validator)
+   repo
+2. Under **Source**, choose **GitHub Actions** (not "Deploy from a branch")
+3. First push to `main` (or manual workflow_dispatch) will publish the site
+   and the URL will appear under Settings → Pages
 
-If keeping the docs in this repo, copy `deploy-docs.yml.example` to
-`.github/workflows/deploy-docs.yml` at the **monorepo root** (not
-inside `docs/`). The workflow's `paths:` filter will only fire on
-docs changes.
+No deploy key, no PAT, no secrets needed — `actions/deploy-pages@v4`
+uses GitHub's per-workflow OIDC token.
 
 ## Theme + branding
 

@@ -11,11 +11,11 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://byte8.github.io',
-  baseUrl: '/module-vat-validator/',
+  url: 'https://magento-vat-validator.byte8.dev',
+  baseUrl: '/',
 
-  organizationName: 'byte8',
-  projectName: 'module-vat-validator',
+  organizationName: 'byte8io',
+  projectName: 'magento-vat-validator',
   trailingSlash: false,
 
   onBrokenLinks: 'warn',
@@ -39,7 +39,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           routeBasePath: 'docs',
           editUrl:
-            'https://github.com/byte8/module-vat-validator/edit/main/docs/',
+            'https://github.com/byte8io/magento-vat-validator/edit/main/docs/',
         },
         blog: {
           showReadingTime: true,
@@ -51,7 +51,7 @@ const config: Config = {
             xslt: true,
           },
           editUrl:
-            'https://github.com/byte8/module-vat-validator/edit/main/docs/',
+            'https://github.com/byte8io/magento-vat-validator/edit/main/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -86,7 +86,7 @@ const config: Config = {
         { to: '/blog', label: 'Changelog', position: 'left' },
         { to: '/pricing', label: 'Pricing', position: 'left' },
         {
-          href: 'https://github.com/byte8/module-vat-validator',
+          href: 'https://github.com/byte8io/magento-vat-validator',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -122,7 +122,7 @@ const config: Config = {
           title: 'Resources',
           items: [
             { label: 'Changelog', to: '/blog' },
-            { label: 'GitHub', href: 'https://github.com/byte8/module-vat-validator' },
+            { label: 'GitHub', href: 'https://github.com/byte8io/magento-vat-validator' },
             { label: 'Marketplace listing', href: 'https://commercemarketplace.adobe.com/' },
           ],
         },
