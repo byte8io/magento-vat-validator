@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Byte8_VatValidator">
+        <sequence>
+            <module name="Byte8_Core"/>
+            <module name="Magento_Customer"/>
+            <module name="Magento_Quote"/>
+            <module name="Magento_Tax"/>
+            <module name="Magento_Backend"/>
+            <module name="Magento_Config"/>
+            <module name="Magento_Webapi"/>
+            <module name="Magento_Cron"/>
+            <module name="Magento_Ui"/>
+        </sequence>
+    </module>
+</config>

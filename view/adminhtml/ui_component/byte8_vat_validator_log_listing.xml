@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">byte8_vat_validator_log_listing.byte8_vat_validator_log_listing_data_source</item>
+        </item>
+    </argument>
+
+    <settings>
+        <spinner>byte8_vat_validator_log_columns</spinner>
+        <deps>
+            <dep>byte8_vat_validator_log_listing.byte8_vat_validator_log_listing_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="byte8_vat_validator_log_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Byte8_VatValidator::log_view</aclResource>
+        <dataProvider class="Byte8\VatValidator\Ui\DataProvider\ValidationLogDataProvider"
+                      name="byte8_vat_validator_log_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters">
+            <settings>
+                <templates>
+                    <filters>
+                        <select>
+                            <param name="template" xsi:type="string">ui/grid/filters/elements/ui-select</param>
+                            <param name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</param>
+                        </select>
+                    </filters>
+                </templates>
+            </settings>
+        </filters>
+        <paging name="listing_paging"/>
+        <exportButton name="export_button">
+            <settings>
+                <options>
+                    <option name="csv" xsi:type="array">
+                        <item name="value" xsi:type="string">csv</item>
+                        <item name="label" xsi:type="string" translate="true">CSV (Finanzamt audit format)</item>
+                        <item name="url" xsi:type="string">mui/export/gridToCsv</item>
+                    </option>
+                    <option name="xml" xsi:type="array">
+                        <item name="value" xsi:type="string">xml</item>
+                        <item name="label" xsi:type="string" translate="true">Excel XML</item>
+                        <item name="url" xsi:type="string">mui/export/gridToXml</item>
+                    </option>
+                </options>
+                <aclResource>Byte8_VatValidator::log_export</aclResource>
+            </settings>
+        </exportButton>
+    </listingToolbar>
+
+    <columns name="byte8_vat_validator_log_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
+
+        <column name="entity_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+
+        <column name="requested_at" class="Magento\Ui\Component\Listing\Columns\Date" sortOrder="20">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Validated At</label>
+            </settings>
+        </column>
+
+        <column name="country_code" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Country</label>
+            </settings>
+        </column>
+
+        <column name="vat_number" sortOrder="40">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">VAT Number</label>
+            </settings>
+        </column>
+
+        <column name="status" component="Magento_Ui/js/grid/columns/select" sortOrder="50">
+            <settings>
+                <filter>select</filter>
+                <options class="Byte8\VatValidator\Ui\Component\Listing\Column\StatusOptions"/>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+
+        <column name="source" component="Magento_Ui/js/grid/columns/select" sortOrder="60">
+            <settings>
+                <filter>select</filter>
+                <options class="Byte8\VatValidator\Ui\Component\Listing\Column\SourceOptions"/>
+                <dataType>select</dataType>
+                <label translate="true">Source</label>
+            </settings>
+        </column>
+
+        <column name="company_name" sortOrder="70">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Company Name</label>
+            </settings>
+        </column>
+
+        <column name="customer_email" sortOrder="80">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Customer Email</label>
+            </settings>
+        </column>
+
+        <column name="request_identifier" sortOrder="90">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Qualified Confirmation Ref</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

@@ -1,0 +1,33 @@
+{
+    "name": "byte8/module-vat-validator",
+    "description": "EU VIES + UK HMRC VAT number validator for Magento 2 — validates B2B buyers at registration and checkout and auto-applies zero-tax customer groups.",
+    "type": "magento2-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Byte8 Ltd",
+            "email": "helo@byte8.io"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3|^8.4|^8.5",
+        "magento/framework": "^103.0",
+        "byte8/module-core": "*",
+        "magento/module-customer": "^103.0",
+        "magento/module-quote": "^101.0",
+        "magento/module-tax": "^100.0",
+        "magento/module-backend": "^102.0",
+        "magento/module-config": "^101.0",
+        "magento/module-webapi": "^100.0",
+        "magento/module-cron": "^100.0",
+        "magento/module-ui": "^101.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Byte8\\VatValidator\\": ""
+        }
+    }
+}

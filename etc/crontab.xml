@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="byte8_vat_validator_prune_log"
+             instance="Byte8\VatValidator\Cron\PruneValidationLog"
+             method="execute">
+            <schedule>17 3 * * *</schedule>
+        </job>
+    </group>
+</config>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Byte8_VatValidator::config" title="Byte8 VAT Validator Configuration" sortOrder="120"/>
+                        </resource>
+                    </resource>
+                </resource>
+                <resource id="Byte8_VatValidator::log_view"
+                          title="View VAT Validation Log"
+                          sortOrder="200"/>
+                <resource id="Byte8_VatValidator::log_export"
+                          title="Export VAT Validation Log"
+                          sortOrder="210"/>
+            </resource>
+        </resources>
+    </acl>
+</config>

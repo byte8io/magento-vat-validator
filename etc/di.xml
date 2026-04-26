@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Byte8\VatValidator\Api\VatValidatorInterface" type="Byte8\VatValidator\Model\VatValidator"/>
+    <preference for="Byte8\VatValidator\Api\Data\ValidationResultInterface" type="Byte8\VatValidator\Model\ValidationResult"/>
+    <preference for="Byte8\VatValidator\Api\Data\ValidationLogInterface" type="Byte8\VatValidator\Model\ValidationLog"/>
+    <preference for="Byte8\VatValidator\Api\ValidationLogRepositoryInterface" type="Byte8\VatValidator\Model\ValidationLogRepository"/>
+    <preference for="Byte8\VatValidator\Api\Data\ValidationLogSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <!-- Dedicated logger -->
+    <virtualType name="Byte8\VatValidator\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/vat_validator.log</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Byte8\VatValidator\Logger\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="name" xsi:type="string">byte8_vat_validator</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Byte8\VatValidator\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Byte8\VatValidator\Model\Client\ViesClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Model\Client\HmrcClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Model\Client\UidCheClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Observer\ValidateCustomerAddress">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Observer\ValidateQuoteAddress">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Observer\PersistValidationLog">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Cron\PruneValidationLog">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Model\ResourceModel\ValidationLog\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">byte8_vat_validator_log</argument>
+            <argument name="resourceModel" xsi:type="string">Byte8\VatValidator\Model\ResourceModel\ValidationLog</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="byte8_vat_validator_log_listing_data_source" xsi:type="string">Byte8\VatValidator\Model\ResourceModel\ValidationLog\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Console\Command\ValidateCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Console\Command\RevalidateAllCommand">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- CLI registration -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="byte8_vat_validator_validate" xsi:type="object">Byte8\VatValidator\Console\Command\ValidateCommand</item>
+                <item name="byte8_vat_validator_revalidate_all" xsi:type="object">Byte8\VatValidator\Console\Command\RevalidateAllCommand</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

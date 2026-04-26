@@ -1,0 +1,31 @@
+{
+    "byte8_vat_validator_log": {
+        "column": {
+            "entity_id": true,
+            "customer_id": true,
+            "customer_email": true,
+            "store_id": true,
+            "country_code": true,
+            "vat_number": true,
+            "status": true,
+            "source": true,
+            "request_identifier": true,
+            "company_name": true,
+            "company_address": true,
+            "request_payload": true,
+            "response_payload": true,
+            "requested_at": true
+        },
+        "index": {
+            "BYTE8_VAT_VALIDATOR_LOG_CUSTOMER_ID_REQUESTED_AT": true,
+            "BYTE8_VAT_VALIDATOR_LOG_COUNTRY_VAT": true,
+            "BYTE8_VAT_VALIDATOR_LOG_STATUS": true,
+            "BYTE8_VAT_VALIDATOR_LOG_REQUESTED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BYTE8_VAT_VALIDATOR_LOG_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID": true,
+            "BYTE8_VAT_VALIDATOR_LOG_STORE_ID_STORE_STORE_ID": true
+        }
+    }
+}

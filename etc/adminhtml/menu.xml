@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Byte8_VatValidator::log"
+             title="VAT Validation Log"
+             translate="title"
+             module="Byte8_VatValidator"
+             parent="Byte8_Core::byte8"
+             sortOrder="30"
+             dependsOnModule="Byte8_VatValidator"
+             action="byte8_vat_validator/log/index"
+             resource="Byte8_VatValidator::log_view"/>
+    </menu>
+</config>

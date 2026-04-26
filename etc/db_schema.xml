@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * SCHEMA FREEZE POLICY
+ * ====================
+ * Pre-v0.1.0: this schema is mutable; bump the whitelist and re-run
+ * setup:upgrade in dev sandboxes.
+ *
+ * From v0.1.0 onwards: this schema is frozen. Any column rename, type
+ * change, or constraint change MUST ship as an additional Setup/Patch
+ * data class — never edit existing definitions in place. Merchants may
+ * already be holding 10-year audit logs under §147 AO; an in-place
+ * change risks data loss.
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <table name="byte8_vat_validator_log" resource="default" engine="innodb" comment="Byte8 VAT Validator History">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="int" name="customer_id" unsigned="true" nullable="true" comment="Customer ID (nullable for guest / API checks)"/>
+        <column xsi:type="varchar" name="customer_email" length="255" nullable="true" comment="Customer Email at time of validation"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+
+        <column xsi:type="varchar" name="country_code" length="2" nullable="false" comment="ISO 2-letter country code (VIES uses EL for Greece)"/>
+        <column xsi:type="varchar" name="vat_number" length="32" nullable="false" comment="VAT number without country prefix"/>
+
+        <column xsi:type="varchar" name="status" length="16" nullable="false" comment="valid | invalid (unavailable/skipped never persisted)"/>
+        <column xsi:type="varchar" name="source" length="16" nullable="false" comment="vies | hmrc | uid_che"/>
+
+        <column xsi:type="varchar" name="request_identifier" length="64" nullable="true" comment="VIES requestIdentifier / HMRC consultationNumber — qualifizierte Bestätigung reference for §18 UStG"/>
+        <column xsi:type="varchar" name="company_name" length="255" nullable="true" comment="Company name returned by upstream"/>
+        <column xsi:type="text" name="company_address" nullable="true" comment="Company address returned by upstream"/>
+
+        <column xsi:type="text" name="request_payload" nullable="true" comment="Raw request payload (JSON) for audit"/>
+        <column xsi:type="text" name="response_payload" nullable="true" comment="Raw response payload (JSON) for audit"/>
+
+        <column xsi:type="timestamp" name="requested_at" nullable="false" default="CURRENT_TIMESTAMP" comment="When the validation was performed"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign"
+                    referenceId="BYTE8_VAT_VALIDATOR_LOG_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID"
+                    table="byte8_vat_validator_log" column="customer_id"
+                    referenceTable="customer_entity" referenceColumn="entity_id"
+                    onDelete="SET NULL"/>
+
+        <constraint xsi:type="foreign"
+                    referenceId="BYTE8_VAT_VALIDATOR_LOG_STORE_ID_STORE_STORE_ID"
+                    table="byte8_vat_validator_log" column="store_id"
+                    referenceTable="store" referenceColumn="store_id"
+                    onDelete="CASCADE"/>
+
+        <index referenceId="BYTE8_VAT_VALIDATOR_LOG_CUSTOMER_ID_REQUESTED_AT" indexType="btree">
+            <column name="customer_id"/>
+            <column name="requested_at"/>
+        </index>
+
+        <index referenceId="BYTE8_VAT_VALIDATOR_LOG_COUNTRY_VAT" indexType="btree">
+            <column name="country_code"/>
+            <column name="vat_number"/>
+        </index>
+
+        <index referenceId="BYTE8_VAT_VALIDATOR_LOG_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+
+        <index referenceId="BYTE8_VAT_VALIDATOR_LOG_REQUESTED_AT" indexType="btree">
+            <column name="requested_at"/>
+        </index>
+    </table>
+
+</schema>

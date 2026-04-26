@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+
+    <event name="customer_address_save_after">
+        <observer name="byte8_vat_validator_customer_address" instance="Byte8\VatValidator\Observer\ValidateCustomerAddress"/>
+    </event>
+
+    <event name="sales_quote_address_save_before">
+        <observer name="byte8_vat_validator_quote_address" instance="Byte8\VatValidator\Observer\ValidateQuoteAddress"/>
+    </event>
+
+    <event name="byte8_vat_validator_validated">
+        <observer name="byte8_vat_validator_persist_log" instance="Byte8\VatValidator\Observer\PersistValidationLog"/>
+    </event>
+</config>

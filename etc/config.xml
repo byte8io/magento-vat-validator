@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <byte8_vat_validator>
+            <general>
+                <enabled>0</enabled>
+                <validate_on_customer_save>1</validate_on_customer_save>
+                <validate_on_checkout>1</validate_on_checkout>
+                <timeout>5</timeout>
+                <requester_country/>
+                <requester_vat_number/>
+            </general>
+            <vies>
+                <enabled>1</enabled>
+                <endpoint>https://ec.europa.eu/taxation_customs/vies/rest-api/check-vat-number</endpoint>
+            </vies>
+            <hmrc>
+                <enabled>1</enabled>
+                <endpoint>https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup</endpoint>
+            </hmrc>
+            <uid_che>
+                <enabled>1</enabled>
+                <endpoint>https://www.uid-wse.admin.ch/V5.0/PublicServices.svc</endpoint>
+            </uid_che>
+            <groups>
+                <auto_assign>1</auto_assign>
+                <domestic_group_id/>
+                <intra_eu_valid_group_id/>
+                <invalid_group_id/>
+            </groups>
+            <log>
+                <enabled>1</enabled>
+                <retention_years>10</retention_years>
+            </log>
+        </byte8_vat_validator>
+    </default>
+</config>

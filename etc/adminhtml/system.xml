@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="byte8_vat_validator" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>VAT Number Validator</label>
+            <tab>byte8_tab</tab>
+            <resource>Byte8_VatValidator::config</resource>
+
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>General Settings</label>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable VAT Validator</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Master switch. When disabled, the module performs no external calls and no observers fire.</comment>
+                </field>
+
+                <field id="validate_on_customer_save" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Validate on Customer Save</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Validate the VAT number whenever a customer account or address is saved (registration or account edit).</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="validate_on_checkout" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Validate on Checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Revalidate the billing-address VAT number when the quote is saved so tax rules apply immediately.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="timeout" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Request Timeout (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Hard timeout for each upstream call. VIES and HMRC can occasionally be slow — keep ≥ 5 to avoid false negatives.</comment>
+                </field>
+
+                <field id="requester_country" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Requester Country Code</label>
+                    <comment>Your own 2-letter ISO country code (e.g. GB, DE, IE). Sent to VIES so the response includes a legally-valid consultation number.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="requester_vat_number" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Requester VAT Number</label>
+                    <comment>Your own VAT number, digits only. Sent to VIES alongside the requester country.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="vies" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>EU VIES</label>
+                <depends>
+                    <field id="byte8_vat_validator/general/enabled">1</field>
+                </depends>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Validate EU numbers via VIES</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="endpoint" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>VIES REST Endpoint</label>
+                    <comment>Leave unchanged unless the EC publishes a new REST endpoint.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="hmrc" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>UK HMRC</label>
+                <depends>
+                    <field id="byte8_vat_validator/general/enabled">1</field>
+                </depends>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Validate UK numbers via HMRC</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="endpoint" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>HMRC Lookup Endpoint</label>
+                    <comment>The public unauthenticated HMRC VAT lookup endpoint. Leave unchanged unless HMRC publishes a new path.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="uid_che" translate="label" type="text" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Switzerland UID-Register (CHE)</label>
+                <depends>
+                    <field id="byte8_vat_validator/general/enabled">1</field>
+                </depends>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Validate Swiss numbers via UID-Register</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Returns "valid" only when the organisation exists, is active, AND is VAT-registered (MWST). UIDs that exist but lack VAT registration return "invalid".</comment>
+                </field>
+
+                <field id="endpoint" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>UID-Register PublicServices Endpoint</label>
+                    <comment>The Swiss BFS public SOAP endpoint. Override only if BFS publishes a new path or you want to point at the test environment (`uid-wse-a.admin.ch`).</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="log" translate="label comment" type="text" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Validation Log (DACH compliance: §18 / §147 AO)</label>
+                <comment><![CDATA[Persists every successful or failed validation to <code>byte8_vat_validator_log</code>. Required for German merchants under <code>§18 UStG</code> (qualifizierte Bestätigung) and <code>§147 AO</code> (10-year retention). View entries under Stores → Byte8 → VAT Validation Log.]]></comment>
+                <depends>
+                    <field id="byte8_vat_validator/general/enabled">1</field>
+                </depends>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Persist Validations to DB</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When Yes, every "valid" / "invalid" outcome is persisted (transient errors are skipped to keep the audit log clean).</comment>
+                </field>
+
+                <field id="retention_years" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Retention (years)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Default 10 — matches §147 AO. Nightly cron prunes anything older.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="groups" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Customer Group Mapping</label>
+                <comment>When a VAT number is validated, the customer is moved into one of these groups. Assign each group a tax class to produce the "Zero Tax" outcome.</comment>
+                <depends>
+                    <field id="byte8_vat_validator/general/enabled">1</field>
+                </depends>
+
+                <field id="auto_assign" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Auto-Assign Customer Group</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When "No", the module only stores the validation outcome; tax class must be handled elsewhere.</comment>
+                </field>
+
+                <field id="domestic_group_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Group for Domestic (same country as store) Valid VAT</label>
+                    <source_model>Magento\Customer\Model\Config\Source\Group</source_model>
+                    <comment>Applied when the buyer is in the same country as the requester — domestic VAT still applies.</comment>
+                    <depends>
+                        <field id="auto_assign">1</field>
+                    </depends>
+                </field>
+
+                <field id="intra_eu_valid_group_id" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Group for Intra-EU / UK Valid VAT (Zero Tax)</label>
+                    <source_model>Magento\Customer\Model\Config\Source\Group</source_model>
+                    <comment>Applied when the buyer passes VIES/HMRC and is in a different country to the store — reverse-charge / zero tax.</comment>
+                    <depends>
+                        <field id="auto_assign">1</field>
+                    </depends>
+                </field>
+
+                <field id="invalid_group_id" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Group for Invalid VAT</label>
+                    <source_model>Magento\Customer\Model\Config\Source\Group</source_model>
+                    <comment>Applied when VAT fails validation. Leave empty to preserve the customer's current group.</comment>
+                    <depends>
+                        <field id="auto_assign">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
