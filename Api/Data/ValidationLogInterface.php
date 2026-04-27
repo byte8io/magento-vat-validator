@@ -27,7 +27,11 @@ interface ValidationLogInterface
 
     public function getEntityId(): ?int;
 
-    public function setEntityId(?int $entityId): self;
+    /**
+     * @param int|null $entityId
+     * @return $this
+     */
+    public function setEntityId($entityId);
 
     public function getCustomerId(): ?int;
 

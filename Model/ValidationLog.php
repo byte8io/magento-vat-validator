@@ -25,7 +25,7 @@ class ValidationLog extends AbstractModel implements ValidationLogInterface
         return $value === null ? null : (int) $value;
     }
 
-    public function setEntityId(?int $entityId): self
+    public function setEntityId($entityId)
     {
         return $this->setData(self::ENTITY_ID, $entityId);
     }
