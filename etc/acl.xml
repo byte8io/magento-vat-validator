@@ -10,13 +10,7 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Magento_Backend::stores">
-                    <resource id="Magento_Backend::stores_settings">
-                        <resource id="Magento_Config::config">
-                            <resource id="Byte8_VatValidator::config" title="Byte8 VAT Validator Configuration" sortOrder="120"/>
-                        </resource>
-                    </resource>
-                </resource>
+                <resource id="Byte8_VatValidator::config" title="Byte8 VAT Validator Configuration" sortOrder="120"/>
                 <resource id="Byte8_VatValidator::log_view"
                           title="View VAT Validation Log"
                           sortOrder="200"/>
