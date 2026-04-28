@@ -77,4 +77,92 @@ class ValidationLogRepository implements ValidationLogRepositoryInterface
             ['requested_at < ?' => $isoTimestamp]
         );
     }
+
+    public function enrichLatest(string $countryCode, string $vatNumber, ?int $customerId, ?string $customerEmail): int
+    {
+        if ($customerId === null && ($customerEmail === null || $customerEmail === '')) {
+            return 0;
+        }
+
+        $connection = $this->resource->getConnection();
+        $select = $connection->select()
+            ->from($this->resource->getMainTable(), 'entity_id')
+            ->where('country_code = ?', strtoupper($countryCode))
+            ->where('vat_number = ?', strtoupper($vatNumber))
+            ->order('requested_at DESC')
+            ->limit(1);
+
+        $entityId = $connection->fetchOne($select);
+        if ($entityId === false || $entityId === null) {
+            return 0;
+        }
+
+        $bind = [];
+        $where = ['entity_id = ?' => (int) $entityId];
+
+        if ($customerId !== null) {
+            $bind['customer_id'] = $customerId;
+            $where['customer_id IS NULL'] = null;
+        }
+        if ($customerEmail !== null && $customerEmail !== '') {
+            $bind['customer_email'] = $customerEmail;
+        }
+        if ($bind === []) {
+            return 0;
+        }
+
+        // Build a WHERE that updates only when the target columns are NULL,
+        // so we never overwrite a value that was already correctly attached
+        // (e.g. by an interactive request that ran before the consumer).
+        $conditions = ['entity_id = ?'];
+        $params = [(int) $entityId];
+        $nullable = [];
+        if ($customerId !== null) {
+            $nullable[] = 'customer_id IS NULL';
+        }
+        if ($customerEmail !== null && $customerEmail !== '') {
+            $nullable[] = 'customer_email IS NULL';
+        }
+        $whereSql = '(' . implode(' OR ', $nullable) . ')';
+        $sql = sprintf(
+            'UPDATE %s SET %s WHERE entity_id = ? AND %s',
+            $connection->quoteIdentifier($this->resource->getMainTable()),
+            implode(', ', array_map(
+                static fn(string $col): string => $col . ' = COALESCE(' . $col . ', ?)',
+                array_keys($bind)
+            )),
+            $whereSql
+        );
+
+        $values = array_merge(array_values($bind), [(int) $entityId]);
+
+        return (int) $connection->query($sql, $values)->rowCount();
+    }
+
+    public function getLatestFresh(string $countryCode, string $vatNumber, int $maxAgeSeconds): ?ValidationLogInterface
+    {
+        $connection = $this->resource->getConnection();
+        $threshold = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
+            ->modify('-' . max(0, $maxAgeSeconds) . ' seconds')
+            ->format('Y-m-d H:i:s');
+
+        $select = $connection->select()
+            ->from($this->resource->getMainTable(), 'entity_id')
+            ->where('country_code = ?', strtoupper($countryCode))
+            ->where('vat_number = ?', strtoupper($vatNumber))
+            ->where('requested_at >= ?', $threshold)
+            ->order('requested_at DESC')
+            ->limit(1);
+
+        $entityId = $connection->fetchOne($select);
+        if ($entityId === false || $entityId === null) {
+            return null;
+        }
+
+        try {
+            return $this->getById((int) $entityId);
+        } catch (NoSuchEntityException) {
+            return null;
+        }
+    }
 }

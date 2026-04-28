@@ -13,7 +13,9 @@
                 <enabled>0</enabled>
                 <validate_on_customer_save>1</validate_on_customer_save>
                 <validate_on_checkout>1</validate_on_checkout>
-                <timeout>5</timeout>
+                <timeout>2</timeout>
+                <connect_timeout>1</connect_timeout>
+                <cache_ttl_hours>24</cache_ttl_hours>
                 <requester_country/>
                 <requester_vat_number/>
             </general>
@@ -24,6 +26,9 @@
             <hmrc>
                 <enabled>1</enabled>
                 <endpoint>https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup</endpoint>
+                <token_endpoint>https://api.service.hmrc.gov.uk/oauth/token</token_endpoint>
+                <client_id/>
+                <client_secret/>
             </hmrc>
             <uid_che>
                 <enabled>1</enabled>

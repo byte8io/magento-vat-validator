@@ -10,7 +10,7 @@
     <system>
         <section id="byte8_vat_validator" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
             <label>VAT Number Validator</label>
-            <tab>byte8_tab</tab>
+            <tab>byte8</tab>
             <resource>Byte8_VatValidator::config</resource>
 
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -43,7 +43,28 @@
                 <field id="timeout" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Request Timeout (seconds)</label>
                     <validate>validate-digits validate-greater-than-zero</validate>
-                    <comment>Hard timeout for each upstream call. VIES and HMRC can occasionally be slow — keep ≥ 5 to avoid false negatives.</comment>
+                    <comment>Hard response timeout for each upstream call. Default 2s — chosen so a slow VIES does not stall checkout. Raise (e.g. 5s) only if you observe false "unavailable" outcomes; remember every checkout step waits up to this long synchronously.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="connect_timeout" translate="label comment" type="text" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connect Timeout (seconds)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>TCP/TLS connect timeout for each upstream call. Default 1s — fails fast when DNS/SYN to VIES/HMRC/UID is unreachable, preventing the full request timeout from being burned on a dead network path.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="cache_ttl_hours" translate="label comment" type="text" sortOrder="48" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Result Cache TTL (hours)</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>How long a stored validation outcome is considered fresh. During checkout, a fresh cached result is reused (no upstream call). When stale, the checkout request returns immediately and an asynchronous queue job revalidates in the background. Default 24h — VAT registration status rarely flips minute-to-minute, and the audit log stays current via the consumer.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
                 </field>
 
                 <field id="requester_country" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -96,7 +117,32 @@
 
                 <field id="endpoint" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>HMRC Lookup Endpoint</label>
-                    <comment>The public unauthenticated HMRC VAT lookup endpoint. Leave unchanged unless HMRC publishes a new path.</comment>
+                    <comment>HMRC's "Check a UK VAT number" v2.0 endpoint. Leave unchanged unless HMRC publishes a new path.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="token_endpoint" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>HMRC OAuth Token Endpoint</label>
+                    <comment><![CDATA[HMRC's OAuth 2.0 token endpoint. Default <code>https://api.service.hmrc.gov.uk/oauth/token</code>. Use the sandbox URL (<code>test-api.service.hmrc.gov.uk</code>) only when testing against HMRC's sandbox application.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="client_id" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>HMRC Client ID</label>
+                    <comment><![CDATA[Required. Each merchant must register their own application at <a href="https://developer.service.hmrc.gov.uk" target="_blank">developer.service.hmrc.gov.uk</a> and subscribe it to "Check a UK VAT number" v2.0. Do not share credentials between sites — HMRC ties consultation references and rate limits to the calling application.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="client_secret" translate="label comment" type="obscure" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>HMRC Client Secret</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment>Required. Stored encrypted via Magento's standard encryption. Used together with the client ID to obtain short-lived bearer tokens via OAuth 2.0 client_credentials.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

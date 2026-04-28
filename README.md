@@ -20,15 +20,24 @@ at checkout — and automatically moves validated customers into a configurable
 ## Features
 
 - EU VIES REST validation (no SOAP, no `php-soap` extension required)
-- UK HMRC public lookup (no OAuth, no client registration)
+- UK HMRC "Check a UK VAT number" v2.0 lookup (application-restricted: server token from HMRC Developer Hub required)
 - Swiss UID-Register validation via hand-rolled SOAP envelope (no
   `ext-soap` dependency); returns `valid` only when the organisation is
   active **and** VAT-registered (MWST)
 - Pluggable: disable any upstream independently
 - Auto-assign customer group by outcome (domestic / intra-EU valid / invalid)
+- **Non-blocking checkout path**: the quote-address observer reads from the
+  persisted log (TTL-bounded) and enqueues an asynchronous `byte8.vat.revalidate`
+  job when the cache is stale. Customers never wait on VIES/HMRC during
+  checkout.
 - Per-request in-memory cache so one checkout doesn't hit VIES 5 times
-- REST endpoint for headless / checkout AJAX:
-  `GET /rest/V1/byte8-vat-validator/validate/:countryCode/:vatNumber`
+- Two REST endpoints:
+  - `GET /rest/V1/byte8-vat-validator/validate/:countryCode/:vatNumber` —
+    *always synchronous*, hits the upstream. Use from the address-form path.
+  - `GET /rest/V1/byte8-vat-validator/lookup/:countryCode/:vatNumber` —
+    *cache-aware*. Returns the latest fresh log entry within the configured
+    TTL; otherwise returns `skipped` and queues an async revalidation. Use
+    from latency-sensitive paths.
 - **DB-backed validation log** with admin grid, CSV / Excel XML export,
   configurable retention (default 10 years per §147 AO) and a nightly prune
   cron — built for German Finanzamt audits but useful for any merchant
@@ -51,6 +60,23 @@ bin/magento setup:upgrade
 bin/magento cache:flush
 ```
 
+### Run the queue consumer
+
+The checkout path is non-blocking: when the persisted result is stale or
+missing, the observer publishes to `byte8.vat.revalidate` instead of
+calling the upstream synchronously. You must run the consumer for those
+jobs to drain (otherwise the audit log won't refresh):
+
+```bash
+bin/magento queue:consumers:start byte8.vat.revalidate
+```
+
+In production, supervise this under your existing consumer manager (e.g.
+`bin/magento queue:consumers:list`, systemd, or `cron_run` mode). The
+default Magento DB-backed queue is used — no AMQP / RabbitMQ broker is
+required, but you can switch the connection in `etc/queue_topology.xml`
+if you already run one.
+
 ## Configuration
 
 Navigate to **Stores > Configuration > Byte8 > VAT Number Validator**.
@@ -60,9 +86,11 @@ Navigate to **Stores > Configuration > Byte8 > VAT Number Validator**.
 | Field | Description |
 |-------|-------------|
 | Enable VAT Validator | Master switch |
-| Validate on Customer Save | Run validation when a customer or address is saved |
-| Validate on Checkout | Revalidate when the quote's billing address is saved |
-| Request Timeout (seconds) | Hard cap on upstream calls |
+| Validate on Customer Save | Run synchronous validation when a customer or address is saved (the customer is waiting on the form, so a synchronous call is appropriate) |
+| Validate on Checkout | Apply cached / async-revalidated VAT result during quote-address save (non-blocking) |
+| Request Timeout (seconds) | Hard response timeout on upstream calls. Default 2s |
+| Connect Timeout (seconds) | TCP/TLS connect timeout. Default 1s — fails fast on unreachable upstreams |
+| Result Cache TTL (hours) | How long a persisted validation outcome is reused before async revalidation is triggered. Default 24h |
 | Requester Country Code | Your 2-letter ISO code (e.g. `GB`, `DE`) — sent to VIES |
 | Requester VAT Number | Your own VAT number — included in VIES calls for a consultation number |
 
@@ -72,7 +100,33 @@ Toggle + endpoint override. Defaults to the current EC REST endpoint.
 
 ### UK HMRC
 
-Toggle + endpoint override. Defaults to the public HMRC lookup endpoint.
+| Field | Description |
+|-------|-------------|
+| Validate UK numbers via HMRC | Toggle for the HMRC client |
+| HMRC Lookup Endpoint | v2.0 endpoint override; leave default unless HMRC publishes a new path |
+| HMRC OAuth Token Endpoint | OAuth 2.0 `/oauth/token` URL. Default `https://api.service.hmrc.gov.uk/oauth/token` |
+| HMRC Client ID | **Required.** OAuth client identifier from your HMRC application |
+| HMRC Client Secret | **Required.** OAuth client secret. Stored encrypted via Magento's `Encrypted` backend model |
+
+#### Each merchant must register their own HMRC application
+
+The "Check a UK VAT number" API v2.0 is *application-restricted* and uses
+OAuth 2.0 client-credentials. **Do not share credentials between sites or
+re-use a vendor's credentials** — HMRC ties consultation references and
+rate limits to the calling application, so every audit-log entry must
+trace back to the merchant's own HMRC enrolment.
+
+Setup steps for each merchant:
+
+1. Sign up at [developer.service.hmrc.gov.uk](https://developer.service.hmrc.gov.uk).
+2. Create an application (production *and* sandbox if you want to test
+   without hitting live data).
+3. Subscribe the application to **"Check a UK VAT number"** v2.0.
+4. Copy the application's *Client ID* and *Client Secret* into the admin
+   fields above. The module uses them to fetch a short-lived bearer
+   token via OAuth `client_credentials`; tokens are cached in Magento's
+   default cache for ~`expires_in − 60s` so checkout requests never wait
+   on the token endpoint.
 
 ### Customer Group Mapping
 
@@ -106,10 +160,17 @@ VAT number, status, source (`vies` / `hmrc`), the upstream
 returned company name + address, and the raw request + response payloads
 for audit reconstruction.
 
-## REST endpoint
+## REST endpoints
+
+Two routes, with different latency/freshness trade-offs:
 
 ```bash
+# Synchronous: hits HMRC/VIES/UID-CHE every time. Use for the address form.
 curl https://yourshop.test/rest/V1/byte8-vat-validator/validate/GB/123456789
+
+# Cache-aware: returns the latest fresh log entry within Result Cache TTL,
+# otherwise queues an async revalidation and returns status=skipped.
+curl https://yourshop.test/rest/V1/byte8-vat-validator/lookup/GB/123456789
 ```
 
 Returns a JSON validation result:

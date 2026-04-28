@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Byte8\VatValidator\Block\Form\RegisterVatInit"
+                   name="byte8.vat.account.edit.init"
+                   template="Byte8_VatValidator::form/register-vat-init.phtml"
+                   after="-"/>
+        </referenceContainer>
+    </body>
+</page>

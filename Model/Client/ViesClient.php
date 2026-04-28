@@ -56,6 +56,7 @@ class ViesClient
         try {
             $curl = $this->curlFactory->create();
             $curl->setTimeout($this->config->getTimeout($storeId));
+            $curl->setOption(CURLOPT_CONNECTTIMEOUT, $this->config->getConnectTimeout($storeId));
             $curl->addHeader('Content-Type', 'application/json');
             $curl->addHeader('Accept', 'application/json');
             $requestBody = json_encode($payload, JSON_THROW_ON_ERROR);

@@ -12,7 +12,8 @@
     <preference for="Byte8\VatValidator\Api\Data\ValidationResultInterface" type="Byte8\VatValidator\Model\ValidationResult"/>
     <preference for="Byte8\VatValidator\Api\Data\ValidationLogInterface" type="Byte8\VatValidator\Model\ValidationLog"/>
     <preference for="Byte8\VatValidator\Api\ValidationLogRepositoryInterface" type="Byte8\VatValidator\Model\ValidationLogRepository"/>
-    <preference for="Byte8\VatValidator\Api\Data\ValidationLogSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Byte8\VatValidator\Api\Data\ValidationLogSearchResultsInterface" type="Byte8\VatValidator\Model\ValidationLogSearchResults"/>
+    <preference for="Byte8\VatValidator\Api\Data\RevalidationRequestInterface" type="Byte8\VatValidator\Model\RevalidationRequest"/>
 
     <!-- Dedicated logger -->
     <virtualType name="Byte8\VatValidator\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
@@ -42,6 +43,24 @@
         </arguments>
     </type>
 
+    <type name="Byte8\VatValidator\Model\Client\HmrcOAuthTokenProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Model\Queue\RevalidationConsumer">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Model\Queue\RevalidationPublisher">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
     <type name="Byte8\VatValidator\Model\Client\UidCheClient">
         <arguments>
             <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
@@ -60,10 +79,23 @@
         </arguments>
     </type>
 
+    <type name="Byte8\VatValidator\Observer\ValidateCustomerSave">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Byte8\VatValidator\Observer\ValidateBeforeOrderPlace">
+        <arguments>
+            <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
+        </arguments>
+    </type>
+
     <type name="Byte8\VatValidator\Observer\PersistValidationLog">
         <arguments>
             <argument name="logger" xsi:type="object">Byte8\VatValidator\Logger\Logger</argument>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
 

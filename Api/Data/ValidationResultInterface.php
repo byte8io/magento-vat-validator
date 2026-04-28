@@ -20,19 +20,43 @@ interface ValidationResultInterface
     public const SOURCE_UID_CHE = 'uid_che';
     public const SOURCE_NONE = 'none';
 
+    /**
+     * @return string
+     */
     public function getCountryCode(): string;
 
+    /**
+     * @return string
+     */
     public function getVatNumber(): string;
 
+    /**
+     * @return string
+     */
     public function getStatus(): string;
 
+    /**
+     * @return string
+     */
     public function getSource(): string;
 
+    /**
+     * @return string|null
+     */
     public function getName(): ?string;
 
+    /**
+     * @return string|null
+     */
     public function getAddress(): ?string;
 
+    /**
+     * @return string|null
+     */
     public function getRequestIdentifier(): ?string;
 
+    /**
+     * @return string|null
+     */
     public function getMessage(): ?string;
 }

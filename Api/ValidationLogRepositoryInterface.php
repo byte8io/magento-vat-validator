@@ -29,4 +29,19 @@ interface ValidationLogRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria): ValidationLogSearchResultsInterface;
 
     public function deleteOlderThan(string $isoTimestamp): int;
+
+    /**
+     * Returns the most recent persisted log entry for (countryCode, vatNumber)
+     * whose requested_at is no older than $maxAgeSeconds. Used as a non-blocking
+     * cache lookup during checkout — see Observer\ValidateQuoteAddress.
+     */
+    public function getLatestFresh(string $countryCode, string $vatNumber, int $maxAgeSeconds): ?ValidationLogInterface;
+
+    /**
+     * Backfill customer_id / customer_email on the most recent log row for
+     * (countryCode, vatNumber) when those fields are NULL. Used by the queue
+     * consumer to attach guest-checkout context that was not available at the
+     * moment the row was written. Returns the number of rows updated (0 or 1).
+     */
+    public function enrichLatest(string $countryCode, string $vatNumber, ?int $customerId, ?string $customerEmail): int;
 }

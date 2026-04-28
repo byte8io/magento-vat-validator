@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/communication.xsd">
+
+    <topic name="byte8.vat.revalidate" request="Byte8\VatValidator\Api\Data\RevalidationRequestInterface">
+        <handler name="default"
+                 type="Byte8\VatValidator\Model\Queue\RevalidationConsumer"
+                 method="process"/>
+    </topic>
+
+</config>

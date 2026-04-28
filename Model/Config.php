@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Byte8\VatValidator\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Config
@@ -17,6 +18,8 @@ class Config
     public const XML_VALIDATE_ON_CUSTOMER_SAVE = 'byte8_vat_validator/general/validate_on_customer_save';
     public const XML_VALIDATE_ON_CHECKOUT = 'byte8_vat_validator/general/validate_on_checkout';
     public const XML_TIMEOUT = 'byte8_vat_validator/general/timeout';
+    public const XML_CONNECT_TIMEOUT = 'byte8_vat_validator/general/connect_timeout';
+    public const XML_CACHE_TTL_HOURS = 'byte8_vat_validator/general/cache_ttl_hours';
     public const XML_REQUESTER_COUNTRY = 'byte8_vat_validator/general/requester_country';
     public const XML_REQUESTER_VAT = 'byte8_vat_validator/general/requester_vat_number';
 
@@ -25,6 +28,9 @@ class Config
 
     public const XML_HMRC_ENABLED = 'byte8_vat_validator/hmrc/enabled';
     public const XML_HMRC_ENDPOINT = 'byte8_vat_validator/hmrc/endpoint';
+    public const XML_HMRC_TOKEN_ENDPOINT = 'byte8_vat_validator/hmrc/token_endpoint';
+    public const XML_HMRC_CLIENT_ID = 'byte8_vat_validator/hmrc/client_id';
+    public const XML_HMRC_CLIENT_SECRET = 'byte8_vat_validator/hmrc/client_secret';
 
     public const XML_UID_CHE_ENABLED = 'byte8_vat_validator/uid_che/enabled';
     public const XML_UID_CHE_ENDPOINT = 'byte8_vat_validator/uid_che/endpoint';
@@ -38,7 +44,8 @@ class Config
     public const XML_LOG_RETENTION_YEARS = 'byte8_vat_validator/log/retention_years';
 
     public function __construct(
-        private readonly ScopeConfigInterface $scopeConfig
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly EncryptorInterface $encryptor
     ) {
     }
 
@@ -61,7 +68,21 @@ class Config
     {
         $value = (int) $this->scopeConfig->getValue(self::XML_TIMEOUT, ScopeInterface::SCOPE_STORE, $storeId);
 
-        return $value > 0 ? $value : 5;
+        return $value > 0 ? $value : 2;
+    }
+
+    public function getConnectTimeout(?int $storeId = null): int
+    {
+        $value = (int) $this->scopeConfig->getValue(self::XML_CONNECT_TIMEOUT, ScopeInterface::SCOPE_STORE, $storeId);
+
+        return $value > 0 ? $value : 1;
+    }
+
+    public function getCacheTtlSeconds(?int $storeId = null): int
+    {
+        $hours = (int) $this->scopeConfig->getValue(self::XML_CACHE_TTL_HOURS, ScopeInterface::SCOPE_STORE, $storeId);
+
+        return ($hours > 0 ? $hours : 24) * 3600;
     }
 
     public function getRequesterCountry(?int $storeId = null): ?string
@@ -96,6 +117,30 @@ class Config
     public function getHmrcEndpoint(?int $storeId = null): string
     {
         return (string) $this->scopeConfig->getValue(self::XML_HMRC_ENDPOINT, ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    public function getHmrcTokenEndpoint(?int $storeId = null): string
+    {
+        return (string) $this->scopeConfig->getValue(self::XML_HMRC_TOKEN_ENDPOINT, ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    public function getHmrcClientId(?int $storeId = null): ?string
+    {
+        $value = trim((string) $this->scopeConfig->getValue(self::XML_HMRC_CLIENT_ID, ScopeInterface::SCOPE_STORE, $storeId));
+
+        return $value !== '' ? $value : null;
+    }
+
+    public function getHmrcClientSecret(?int $storeId = null): ?string
+    {
+        $stored = (string) $this->scopeConfig->getValue(self::XML_HMRC_CLIENT_SECRET, ScopeInterface::SCOPE_STORE, $storeId);
+        if ($stored === '') {
+            return null;
+        }
+
+        $decrypted = $this->encryptor->decrypt($stored);
+
+        return $decrypted !== '' ? $decrypted : null;
     }
 
     public function isUidCheEnabled(?int $storeId = null): bool

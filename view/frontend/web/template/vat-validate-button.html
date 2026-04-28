@@ -1,0 +1,62 @@
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<div class="byte8-vat-validate" data-bind="visible: true">
+    <div class="byte8-vat-validate__row">
+        <button type="button"
+                class="action secondary byte8-vat-validate__button"
+                data-bind="click: validate, disable: isLoading()">
+            <span data-bind="visible: !isLoading()" translate="'Validate VAT Number'"></span>
+            <span data-bind="visible: isLoading()" translate="'Checking…'"></span>
+        </button>
+    </div>
+
+    <!-- ko if: errorMessage() -->
+    <div class="byte8-vat-validate__error message message-error error">
+        <span data-bind="text: errorMessage()"></span>
+    </div>
+    <!-- /ko -->
+
+    <!-- ko if: result() -->
+    <div class="byte8-vat-validate__result"
+         data-bind="css: statusClass()">
+        <div class="byte8-vat-validate__headline">
+            <strong data-bind="text: statusLabel()"></strong>
+            <!-- ko if: result().country_code && result().vat_number -->
+            <span class="byte8-vat-validate__number"
+                  data-bind="text: result().country_code + result().vat_number"></span>
+            <!-- /ko -->
+            <!-- ko if: sourceLabel() -->
+            <span class="byte8-vat-validate__source"
+                  data-bind="text: '· ' + sourceLabel()"></span>
+            <!-- /ko -->
+        </div>
+
+        <!-- ko if: result().name -->
+        <div class="byte8-vat-validate__name" data-bind="text: result().name"></div>
+        <!-- /ko -->
+
+        <!-- ko if: result().address -->
+        <div class="byte8-vat-validate__address" data-bind="text: result().address"></div>
+        <!-- /ko -->
+
+        <!-- ko if: result().request_identifier -->
+        <div class="byte8-vat-validate__ref">
+            <span translate="'Reference'"></span>:
+            <code data-bind="text: result().request_identifier"></code>
+        </div>
+        <!-- /ko -->
+
+        <!-- ko if: result().status === 'invalid' && result().message -->
+        <div class="byte8-vat-validate__hint" data-bind="text: result().message"></div>
+        <!-- /ko -->
+
+        <!-- ko if: result().status === 'unavailable' -->
+        <div class="byte8-vat-validate__hint" translate="'The validation service is temporarily unavailable. You can still proceed; we will revalidate in the background.'"></div>
+        <!-- /ko -->
+    </div>
+    <!-- /ko -->
+</div>

@@ -60,6 +60,7 @@ class UidCheClient
         try {
             $curl = $this->curlFactory->create();
             $curl->setTimeout($this->config->getTimeout($storeId));
+            $curl->setOption(CURLOPT_CONNECTTIMEOUT, $this->config->getConnectTimeout($storeId));
             $curl->addHeader('Content-Type', 'text/xml; charset=utf-8');
             $curl->addHeader('SOAPAction', '"' . self::SOAP_ACTION . '"');
             $curl->post($this->config->getUidCheEndpoint($storeId), $envelope);

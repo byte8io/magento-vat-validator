@@ -71,7 +71,6 @@
                         <item name="url" xsi:type="string">mui/export/gridToXml</item>
                     </option>
                 </options>
-                <aclResource>Byte8_VatValidator::log_export</aclResource>
             </settings>
         </exportButton>
     </listingToolbar>
@@ -113,11 +112,14 @@
             </settings>
         </column>
 
-        <column name="status" component="Magento_Ui/js/grid/columns/select" sortOrder="50">
+        <column name="status"
+                class="Byte8\VatValidator\Ui\Component\Listing\Column\StatusPill"
+                sortOrder="50">
             <settings>
                 <filter>select</filter>
                 <options class="Byte8\VatValidator\Ui\Component\Listing\Column\StatusOptions"/>
                 <dataType>select</dataType>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
                 <label translate="true">Status</label>
             </settings>
         </column>

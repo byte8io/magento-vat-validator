@@ -1,0 +1,41 @@
+/*
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+.byte8-vat-validate {
+    margin: -10px 0 18px 0;
+}
+.byte8-vat-validate__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.byte8-vat-validate__button {
+    font-weight: 600;
+}
+.byte8-vat-validate__error {
+    margin-top: 8px;
+    padding: 6px 9px;
+    border-radius: 4px;
+    background: #fdf0f0;
+    color: #c0392b;
+    font-size: 13px;
+}
+.byte8-vat-validate__result {
+    margin-top: 9px;
+    padding: 9px 10px;
+    border-radius: 4px;
+    background: #fff;
+    border-left: 3px solid #888;
+}
+.byte8-vat-status--valid       { border-left-color: #2ecc71 !important; background: #f1faf3 !important; }
+.byte8-vat-status--invalid     { border-left-color: #c0392b !important; background: #fdf0f0 !important; }
+.byte8-vat-status--unavailable { border-left-color: #f39c12 !important; background: #fef6e7 !important; }
+.byte8-vat-validate__headline { font-size: 15px; margin-bottom: 4px; }
+.byte8-vat-validate__number   { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; margin-left: 4px; }
+.byte8-vat-validate__source   { margin-left: 4px; color: #666; font-size: 12px; }
+.byte8-vat-validate__name     { font-weight: 600; margin-bottom: 2px; }
+.byte8-vat-validate__address,
+.byte8-vat-validate__ref,
+.byte8-vat-validate__hint     { font-size: 13px; color: #555; }
+.byte8-vat-validate__ref code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: rgba(0,0,0,0.05); padding: 0 3px; border-radius: 3px; }

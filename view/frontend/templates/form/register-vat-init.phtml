@@ -1,0 +1,25 @@
+<?php
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * @var \Byte8\VatValidator\Block\Form\RegisterVatInit $block
+ * @var \Magento\Framework\Escaper $escaper
+ * @var \Magento\Framework\Json\Helper\Data $jsonHelper
+ */
+
+if (!$block->isEnabled()) {
+    return;
+}
+
+$config = [
+    'fallbackCountry' => $block->getFallbackCountry(),
+];
+?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Byte8_VatValidator/js/registration-vat-validate": <?= /* @noEscape */ json_encode($config, JSON_THROW_ON_ERROR) ?>
+    }
+}
+</script>

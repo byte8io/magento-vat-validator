@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
+
+    <consumer name="byte8.vat.revalidate"
+              queue="byte8.vat.revalidate"
+              connection="db"
+              maxMessages="1000"
+              consumerInstance="Magento\Framework\MessageQueue\Consumer"
+              handler="Byte8\VatValidator\Model\Queue\RevalidationConsumer::process"/>
+
+</config>

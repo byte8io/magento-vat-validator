@@ -8,11 +8,14 @@ declare(strict_types=1);
 
 namespace Byte8\VatValidator\Model;
 
+use Byte8\VatValidator\Api\Data\ValidationLogInterface;
 use Byte8\VatValidator\Api\Data\ValidationResultInterface;
+use Byte8\VatValidator\Api\ValidationLogRepositoryInterface;
 use Byte8\VatValidator\Api\VatValidatorInterface;
 use Byte8\VatValidator\Model\Client\HmrcClient;
 use Byte8\VatValidator\Model\Client\UidCheClient;
 use Byte8\VatValidator\Model\Client\ViesClient;
+use Byte8\VatValidator\Model\Queue\RevalidationPublisher;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 
 class VatValidator implements VatValidatorInterface
@@ -26,7 +29,9 @@ class VatValidator implements VatValidatorInterface
         private readonly UidCheClient $uidCheClient,
         private readonly ValidationResultFactory $resultFactory,
         private readonly ValidationCache $cache,
-        private readonly EventManagerInterface $eventManager
+        private readonly EventManagerInterface $eventManager,
+        private readonly ValidationLogRepositoryInterface $logRepository,
+        private readonly RevalidationPublisher $publisher
     ) {
     }
 
@@ -61,6 +66,41 @@ class VatValidator implements VatValidatorInterface
         $this->eventManager->dispatch(self::EVENT_VALIDATED, ['result' => $result]);
 
         return $result;
+    }
+
+    public function validateCached(string $countryCode, string $vatNumber): ValidationResultInterface
+    {
+        [$country, $number] = $this->normalise($countryCode, $vatNumber);
+
+        if (!$this->config->isEnabled()) {
+            return $this->skipped($country, $number, 'Module disabled');
+        }
+
+        if ($country === '' || $number === '') {
+            return $this->skipped($country, $number, 'Country or VAT number missing');
+        }
+
+        $cached = $this->logRepository->getLatestFresh($country, $number, $this->config->getCacheTtlSeconds());
+        if ($cached !== null) {
+            return $this->resultFromLog($cached);
+        }
+
+        $this->publisher->publish($country, $number);
+
+        return $this->skipped($country, $number, 'Revalidation queued');
+    }
+
+    private function resultFromLog(ValidationLogInterface $log): ValidationResultInterface
+    {
+        return $this->resultFactory->create(['data' => [
+            'country_code' => $log->getCountryCode(),
+            'vat_number' => $log->getVatNumber(),
+            'status' => $log->getStatus(),
+            'source' => $log->getSource(),
+            'name' => $log->getCompanyName(),
+            'address' => $log->getCompanyAddress(),
+            'request_identifier' => $log->getRequestIdentifier(),
+        ]]);
     }
 
     /**

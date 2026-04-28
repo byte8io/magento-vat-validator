@@ -1,0 +1,76 @@
+<?php
+/**
+ * Copyright © Byte8 Ltd. All rights reserved.
+ * See LICENSE.txt for license details.
+ *
+ * @var \Byte8\VatValidator\Block\Adminhtml\Order\View\VatStatus $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+if (!$block->hasVatNumber()) {
+    return;
+}
+
+$badge = $block->getStatusBadge();
+$log = $block->getLatestLogEntry();
+$address = $block->getBillingAddress();
+?>
+<section class="admin__page-section byte8-vat-status">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $escaper->escapeHtml(__('VAT Validation')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <table class="admin__table-secondary">
+            <tbody>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('VAT Number')) ?></th>
+                <td><?= $escaper->escapeHtml($address->getVatId()) ?></td>
+            </tr>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Status')) ?></th>
+                <td>
+                    <span class="grid-severity-<?= $escaper->escapeHtmlAttr($badge['severity']) ?>">
+                        <span><?= $escaper->escapeHtml($badge['label']) ?></span>
+                    </span>
+                </td>
+            </tr>
+            <?php if ($log !== null): ?>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Source')) ?></th>
+                <td><?= $escaper->escapeHtml($block->getSourceLabel($log->getSource())) ?></td>
+            </tr>
+            <?php if ($log->getRequestIdentifier()): ?>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Consultation Reference')) ?></th>
+                <td>
+                    <code><?= $escaper->escapeHtml($log->getRequestIdentifier()) ?></code>
+                    <span class="note"><?= $escaper->escapeHtml(__('§18 UStG qualifizierte Bestätigung reference')) ?></span>
+                </td>
+            </tr>
+            <?php endif; ?>
+            <?php if ($log->getCompanyName()): ?>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Registered Name')) ?></th>
+                <td><?= $escaper->escapeHtml($log->getCompanyName()) ?></td>
+            </tr>
+            <?php endif; ?>
+            <?php if ($log->getCompanyAddress()): ?>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Registered Address')) ?></th>
+                <td><?= $escaper->escapeHtml($log->getCompanyAddress()) ?></td>
+            </tr>
+            <?php endif; ?>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Last Checked')) ?></th>
+                <td><?= $escaper->escapeHtml($log->getRequestedAt() ?? '') ?> <span class="note">UTC</span></td>
+            </tr>
+            <?php else: ?>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Audit Log')) ?></th>
+                <td><span class="note"><?= $escaper->escapeHtml(__('No persisted log entry found for this VAT number.')) ?></span></td>
+            </tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</section>

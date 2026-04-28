@@ -64,6 +64,7 @@
         <index referenceId="BYTE8_VAT_VALIDATOR_LOG_COUNTRY_VAT" indexType="btree">
             <column name="country_code"/>
             <column name="vat_number"/>
+            <column name="requested_at"/>
         </index>
 
         <index referenceId="BYTE8_VAT_VALIDATOR_LOG_STATUS" indexType="btree">

@@ -14,4 +14,11 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+
+    <route url="/V1/byte8-vat-validator/lookup/:countryCode/:vatNumber" method="GET">
+        <service class="Byte8\VatValidator\Api\VatValidatorInterface" method="validateCached"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
