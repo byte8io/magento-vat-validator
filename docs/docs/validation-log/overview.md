@@ -21,9 +21,9 @@ keyed on customer + invoice context.
 | Status | Persisted? | Why |
 |---|---|---|
 | `valid` | ✅ | Audit evidence |
-| `invalid` | ✅ | Audit evidence |
+| `invalid` | ✅ | Audit evidence — including format-only failures (wrong digit count) caught by `FormatValidator` |
 | `unavailable` | ❌ | Transient — would pollute the §147 AO record with hundreds of "we tried, couldn't reach VIES" rows |
-| `skipped` | ❌ | Module disabled or unsupported country — no value in retaining |
+| `skipped` | ❌ | Module disabled, unsupported country, or `validateCached` queued an async revalidation — no value in retaining |
 
 Unavailable / skipped attempts still go to `var/log/vat_validator.log`
 for ops debugging. They just don't enter the audit table.
@@ -48,7 +48,9 @@ for ops debugging. They just don't enter the audit table.
 ## Indexes
 
 - `(customer_id, requested_at)` — fast per-customer history
-- `(country_code, vat_number)` — fast lookup for "did we ever validate this number?"
+- `(country_code, vat_number, requested_at)` — fast TTL-bounded cache
+  lookup (`getLatestFresh`). Index-only — the checkout path doesn't
+  touch the table heap on a cache hit
 - `status` — filter the grid by valid / invalid
 - `requested_at` — date-range queries + retention prune
 

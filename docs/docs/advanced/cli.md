@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: CLI commands
 description: bin/magento commands for validation and bulk re-validation.
 ---

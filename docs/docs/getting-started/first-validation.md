@@ -61,11 +61,30 @@ Same result, JSON-shaped:
 }
 ```
 
-## Trigger an observer
+## Hit the cache-aware endpoint
 
-Place an order as a logged-in B2B customer with a valid intra-EU VAT and
-a different billing country to your store. Watch
-`var/log/vat_validator.log` and the validation log table — the
-`sales_quote_address_save_before` observer fires when the billing address
-is saved, and the `customer_group_id` on the quote flips before totals
-are recalculated.
+```bash
+curl https://yourshop.test/rest/V1/byte8-vat-validator/lookup/GB/123456789 | jq .
+```
+
+Same shape, but **cache-aware**. If the persisted log row is fresh
+(within the configured Result Cache TTL), `/lookup` returns it
+immediately — no upstream call. If stale or missing, it queues an
+async revalidation and returns `status=skipped` while the consumer
+drains. See [REST API](/docs/advanced/rest-api) for when to pick which.
+
+## Trigger the checkout observer
+
+Place an order as a logged-in B2B customer with a valid intra-EU VAT
+and a different billing country to your store. Watch
+`var/log/vat_validator.log` and the validation log table:
+
+- The `sales_quote_address_save_before` observer fires on every quote
+  address save. It reads from the result cache and applies the right
+  `customer_group_id` if a fresh row exists.
+- On a cache miss, the observer publishes to the
+  `byte8.vat.revalidate` queue and returns immediately. **Make sure
+  the consumer is running** (`bin/magento queue:consumers:start
+  byte8.vat.revalidate`) — otherwise the row never gets written and
+  the next checkout still sees a cache miss. See
+  [Async queue](/docs/advanced/async-queue).

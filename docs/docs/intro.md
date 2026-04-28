@@ -8,10 +8,11 @@ description: Byte8 VAT Validator — EU VIES + UK HMRC + Swiss UID validation fo
 # Byte8 VAT Validator
 
 A free, MIT-licensed Magento 2 module that validates B2B buyers' VAT
-numbers against the **EU VIES** REST API, the **UK HMRC** public lookup,
-and the **Swiss UID-Register** — at customer registration **and** at
-checkout — and automatically moves validated customers into a configurable
-"Zero Tax" customer group so the right tax rules fire immediately.
+numbers against the **EU VIES** REST API, **UK HMRC's "Check a UK VAT
+number" v2.0** (OAuth 2.0), and the **Swiss UID-Register** — at customer
+registration **and** at checkout — and automatically moves validated
+customers into a configurable "Zero Tax" customer group so the right
+tax rules fire immediately.
 
 ## Why this exists
 
@@ -26,14 +27,31 @@ Magento's native VAT validation has three problems in 2026:
    buyer who changes country at checkout gets the wrong tax.
 
 This module is the modern replacement: REST-only (no `ext-soap`), EU + UK
-+ CH coverage, and re-validates on every billing-address save so the tax
-rule applies before the customer hits "Place Order".
++ CH coverage, and a **non-blocking** checkout path — every quote
+address save reads from a TTL-bounded result cache and queues an async
+revalidation if stale. Order placement is never blocked on VIES / HMRC
+/ UID-CHE responsiveness.
+
+## What's new in v1.0
+
+- **Async checkout queue** — `byte8.vat.revalidate` topic, DB-backed by
+  default. See [Async queue](/docs/advanced/async-queue).
+- **HMRC OAuth 2.0** — "Check a UK VAT number" v2.0 is
+  application-restricted. Each merchant must register their own
+  application. See [HMRC](/docs/clients/hmrc).
+- **Live "Verify VAT" buttons** on Luma registration, account-edit, and
+  checkout — shipped with the core module. See
+  [Luma storefront widgets](/docs/frontend/luma).
+- **Cache-aware REST `/lookup`** for headless storefronts — see
+  [REST API](/docs/advanced/rest-api).
+- **Customer-facing notices** on the storefront when a VAT can't be
+  verified (non-blocking — order proceeds with full VAT applied).
 
 ## Where to start
 
 If you've never installed the module, jump straight to the
 [Quick start](/docs/getting-started/quick-start) — it's a 5-minute
-Composer install + one config flag.
+Composer install + a couple of config flags.
 
 If you're a German merchant who's reading this because you need a
 queryable validation log for §147 AO retention, start at

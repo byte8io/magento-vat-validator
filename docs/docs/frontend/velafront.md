@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: VelaFront / Next.js
 description: React component + headless hook for VelaFront and any Next.js storefront.
 ---

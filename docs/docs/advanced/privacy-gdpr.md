@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Privacy & GDPR
 description: What gets sent to third parties, the lawful basis, and suggested privacy-policy copy.
 ---

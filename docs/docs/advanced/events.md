@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: Events for integrators
 description: Subscribe to validation outcomes from your own module.
 ---
@@ -12,7 +12,23 @@ Magento module.
 ## `byte8_vat_validator_validated`
 
 Fired once per call to `VatValidator::validate()`, regardless of
-outcome. Carries the full `ValidationResultInterface` instance.
+outcome — **including format-only failures and queue-consumer
+revalidations**. Carries the full `ValidationResultInterface`
+instance.
+
+The event fires from:
+
+- `VatValidator::validate()` — every direct API call (REST
+  `/validate`, CLI `byte8:vat:validate`, `validateCached` cache hits
+  if you choose to dispatch).
+- `Observer\ValidateQuoteAddress` — when a synchronous format error is
+  caught (so the audit log records it).
+- `Model\Queue\RevalidationConsumer` — every async revalidation that
+  actually hits the upstream.
+
+So a subscriber that wants to push validated B2B customers into a
+CRM gets the full picture, regardless of which path produced the
+result.
 
 ```xml
 <event name="byte8_vat_validator_validated">

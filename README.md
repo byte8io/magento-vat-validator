@@ -46,6 +46,19 @@ at checkout — and automatically moves validated customers into a configurable
 - Dedicated log file at `var/log/vat_validator.log` for ops debugging
 - CLI: `bin/magento byte8:vat:validate GB123456789`
 
+## Companion modules
+
+### Hyvä storefront support
+
+Running a Hyvä-themed storefront? Install **[byte8/module-vat-validator-hyva](https://github.com/byte8io/magento-vat-validator-hyva)**
+for a live, debounced VAT-validation indicator on the registration and
+address forms — green / red badge appears under the VAT input as the
+customer types, no extra JS dependencies (Alpine + Tailwind only).
+
+```bash
+composer require byte8/module-vat-validator-hyva
+```
+
 ## Requirements
 
 - Magento 2.4.x

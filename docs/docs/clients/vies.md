@@ -58,3 +58,11 @@ CET) and unscheduled outages. When VIES returns 5xx or times out, the
 module returns `unavailable` — and unavailable results **never** strip a
 customer's existing customer group. Native Magento downgrades on outage;
 we don't.
+
+The checkout path additionally insulates customers from VIES
+flakiness: it reads from the result cache rather than calling VIES
+synchronously, and a missed cache enqueues an async revalidation. If
+VIES is down, the consumer retries on its own schedule and the
+customer's checkout still completes (with their previously-cached
+group, or full VAT if they're a new buyer). See
+[Async queue](/docs/advanced/async-queue).

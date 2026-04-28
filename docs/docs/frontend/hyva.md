@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: Hyvä companion module
 description: Live VAT validation indicator for Hyvä-themed registration forms.
 ---
@@ -27,7 +27,8 @@ bin/magento cache:flush
 | `customer/address/form` | `vat_id` + `country_id` |
 
 Hyvä Checkout (Magewire-based) is not yet wired — open an issue if you
-need it.
+need it. (The Luma core module ships a Knockout button on Luma
+checkout — see [Luma storefront widgets](/docs/frontend/luma).)
 
 ## Behaviour
 

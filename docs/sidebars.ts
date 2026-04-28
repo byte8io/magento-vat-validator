@@ -45,6 +45,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Front-end',
       items: [
+        'frontend/luma',
         'frontend/hyva',
         'frontend/velafront',
       ],
@@ -54,6 +55,7 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       items: [
         'advanced/rest-api',
+        'advanced/async-queue',
         'advanced/cli',
         'advanced/events',
         'advanced/privacy-gdpr',
