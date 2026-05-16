@@ -2,18 +2,18 @@
 
 Docusaurus 3 site for [`byte8/module-vat-validator`](../README.md).
 
-Hosted at **https://magento-vat-validator.byte8.dev**.
+Hosted at **https://docs.byte8.io/vat/** — served under the unified Byte8 docs domain via Cloudflare Pages and a path-based Worker router (see `apps/docs-router/` in the byte8.io monorepo).
 
 ## Local development
 
 ```bash
 cd docs
-nvm use            # picks up .nvmrc → Node 20
+nvm use            # picks up .nvmrc → Node 22
 pnpm install
 pnpm start
 ```
 
-Opens at `http://localhost:3000/`.
+Opens at `http://localhost:3000/vat/` (the `baseUrl` prefix is honoured in dev too).
 
 ## Production build
 
@@ -22,28 +22,15 @@ pnpm build
 pnpm serve
 ```
 
-Output lands in `build/`.
+Output lands in `build/`. Deployed via **Cloudflare Pages**:
 
-## Deploying
+- **Project:** `docs-magento-vat-validator`
+- **Build command:** `pnpm install --frozen-lockfile && pnpm build`
+- **Build output:** `build`
+- **Root directory:** `docs` (since this Docusaurus project sits in a subfolder of the module repo)
+- **Production URL:** `https://docs.byte8.io/vat/`
 
-Automated. Every push to `main` that touches `docs/**` triggers
-`.github/workflows/deploy-docs.yml`, which builds the site and
-publishes it to GitHub Pages.
-
-You can also kick a deploy manually from the **Actions** tab on
-GitHub → "Deploy Docs" → "Run workflow".
-
-### One-time GitHub setup
-
-1. Go to **Settings → Pages** on the
-   [byte8io/magento-vat-validator](https://github.com/byte8io/magento-vat-validator)
-   repo
-2. Under **Source**, choose **GitHub Actions** (not "Deploy from a branch")
-3. First push to `main` (or manual workflow_dispatch) will publish the site
-   and the URL will appear under Settings → Pages
-
-No deploy key, no PAT, no secrets needed — `actions/deploy-pages@v4`
-uses GitHub's per-workflow OIDC token.
+Cloudflare Pages auto-builds on every push to `main`.
 
 ## Theme + branding
 

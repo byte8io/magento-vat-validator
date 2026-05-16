@@ -11,11 +11,10 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://magento-vat-validator.byte8.dev',
-  baseUrl: '/',
-
-  organizationName: 'byte8io',
-  projectName: 'magento-vat-validator',
+  // Production URL — served under unified docs domain (Cloudflare Pages + Worker router).
+  // See apps/docs-router in the byte8.io monorepo + docs/DOCS_SITE_MIGRATION.md.
+  url: 'https://docs.byte8.io',
+  baseUrl: '/vat/',
   trailingSlash: false,
 
   onBrokenLinks: 'warn',
