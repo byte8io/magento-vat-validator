@@ -9,6 +9,11 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <byte8_vat_validator>
+            <activation>
+                <endpoint>https://api.byte8.io/graphql</endpoint>
+                <timeout>5</timeout>
+                <connect_timeout>2</connect_timeout>
+            </activation>
             <general>
                 <enabled>0</enabled>
                 <validate_on_customer_save>1</validate_on_customer_save>

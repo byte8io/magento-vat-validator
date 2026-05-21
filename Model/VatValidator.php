@@ -12,6 +12,7 @@ use Byte8\VatValidator\Api\Data\ValidationLogInterface;
 use Byte8\VatValidator\Api\Data\ValidationResultInterface;
 use Byte8\VatValidator\Api\ValidationLogRepositoryInterface;
 use Byte8\VatValidator\Api\VatValidatorInterface;
+use Byte8\VatValidator\Model\Activation\Activation;
 use Byte8\VatValidator\Model\Client\HmrcClient;
 use Byte8\VatValidator\Model\Client\UidCheClient;
 use Byte8\VatValidator\Model\Client\ViesClient;
@@ -31,7 +32,8 @@ class VatValidator implements VatValidatorInterface
         private readonly ValidationCache $cache,
         private readonly EventManagerInterface $eventManager,
         private readonly ValidationLogRepositoryInterface $logRepository,
-        private readonly RevalidationPublisher $publisher
+        private readonly RevalidationPublisher $publisher,
+        private readonly Activation $activation
     ) {
     }
 
@@ -45,6 +47,10 @@ class VatValidator implements VatValidatorInterface
 
         if ($country === '' || $number === '') {
             return $this->skipped($country, $number, 'Country or VAT number missing');
+        }
+
+        if (!$this->activation->isActive()) {
+            return $this->skipped($country, $number, 'Activation key missing or invalid');
         }
 
         $cached = $this->cache->get($country, $number);
@@ -78,6 +84,10 @@ class VatValidator implements VatValidatorInterface
 
         if ($country === '' || $number === '') {
             return $this->skipped($country, $number, 'Country or VAT number missing');
+        }
+
+        if (!$this->activation->isActive()) {
+            return $this->skipped($country, $number, 'Activation key missing or invalid');
         }
 
         $cached = $this->logRepository->getLatestFresh($country, $number, $this->config->getCacheTtlSeconds());

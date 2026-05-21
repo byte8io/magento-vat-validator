@@ -112,6 +112,17 @@
         </arguments>
     </type>
 
+    <!-- Activation: bind VAT Validator's product_id + config path prefix to
+         the shared Byte8\Activation\Model\Activation gate. The empty
+         subclass Model/Activation/Activation.php exists purely as a
+         type-hint anchor so PHP can inject this product's bound instance. -->
+    <type name="Byte8\VatValidator\Model\Activation\Activation">
+        <arguments>
+            <argument name="productId" xsi:type="string">vat_validator</argument>
+            <argument name="configPathPrefix" xsi:type="string">byte8_vat_validator/activation/</argument>
+        </arguments>
+    </type>
+
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
@@ -138,6 +149,7 @@
             <argument name="commands" xsi:type="array">
                 <item name="byte8_vat_validator_validate" xsi:type="object">Byte8\VatValidator\Console\Command\ValidateCommand</item>
                 <item name="byte8_vat_validator_revalidate_all" xsi:type="object">Byte8\VatValidator\Console\Command\RevalidateAllCommand</item>
+                <item name="byte8_vat_validator_activate" xsi:type="object">Byte8\VatValidator\Console\Command\ActivateCommand</item>
             </argument>
         </arguments>
     </type>
