@@ -5,6 +5,27 @@ All notable changes to `byte8/module-vat-validator` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/byte8io/magento-vat-validator/compare/v1.0.0...v1.1.0) (2026-05-21)
+
+
+### Features
+
+* **activation:** gate validation behind byte8 activation key ([52d8c27](https://github.com/byte8io/magento-vat-validator/commit/52d8c27e91c690c6d69c5ed08f0094e6e2a6c311))
+* **nav:** add "← All docs" link to navbar pointing to docs hub ([f3e4aec](https://github.com/byte8io/magento-vat-validator/commit/f3e4aec1a9460ac34025d523b7c3e02beb54d398))
+* **search:** wire Algolia DocSearch — cross-product search across docs.byte8.io ([e63e111](https://github.com/byte8io/magento-vat-validator/commit/e63e111cf8746014e1d5c934cd380e931624daef))
+
+
+### Bug Fixes
+
+* **docs:** lock landing page stats strip to fixed 4-up so the last card stops wrapping ([2b6022d](https://github.com/byte8io/magento-vat-validator/commit/2b6022d7859c27e5f915cb1f598224b99b815e79))
+* **search:** force full nav for cross-site search results ([193b957](https://github.com/byte8io/magento-vat-validator/commit/193b9575142d07dfb31715a611055a563a69b23f))
+* **search:** keep DocSearch links internal-looking for SEO + clientModule for same-tab nav ([c67a62a](https://github.com/byte8io/magento-vat-validator/commit/c67a62a7c32759694aa1356052d5edcb9b0561db))
+
+
+### Documentation
+
+* migrate to docs.byte8.io/vat unified domain ([56c4590](https://github.com/byte8io/magento-vat-validator/commit/56c4590f44580918744eb2185d43b05ce03d59d0))
+
 ## [Unreleased]
 
 Targeting v0.2.0 once Phase 2 verification (live smoke tests against a
