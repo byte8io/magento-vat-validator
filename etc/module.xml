@@ -10,7 +10,6 @@
     <module name="Byte8_VatValidator">
         <sequence>
             <module name="Byte8_Core"/>
-            <module name="Byte8_Activation"/>
             <module name="Magento_Customer"/>
             <module name="Magento_Quote"/>
             <module name="Magento_Tax"/>

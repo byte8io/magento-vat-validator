@@ -29,8 +29,7 @@
     "require": {
         "php": "^8.1|^8.2|^8.3|^8.4|^8.5",
         "magento/framework": "^103.0",
-        "byte8/module-core": "*",
-        "byte8/module-activation": "^1",
+        "byte8/module-core": "^1.1",
         "magento/module-customer": "^103.0",
         "magento/module-quote": "^101.0",
         "magento/module-tax": "^100.0",
