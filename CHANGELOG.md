@@ -5,6 +5,13 @@ All notable changes to `byte8/module-vat-validator` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1](https://github.com/byte8io/magento-vat-validator/compare/v1.1.0...v1.1.1) (2026-06-15)
+
+
+### Refactor
+
+* **activation:** repoint gate to byte8/module-core ([7456d82](https://github.com/byte8io/magento-vat-validator/commit/7456d82ea092d6c08936e3e46ca3b61010405e76))
+
 ## [1.1.0](https://github.com/byte8io/magento-vat-validator/compare/v1.0.0...v1.1.0) (2026-05-21)
 
 
